@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css"
+		/>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<h1>5 Fulton</h1>
+		<h2>Inbound from Baker & McAllister</h2>
+		<ul class="js-prediction-list"></ul>
+	</body>
+	<script src="app.js"></script>
+	<script>
+		window.onload = event => {
+			const tick = () => {
+				removeStalePredictions();
+				getBusPredictions().then(predictions =>
+					predictions.forEach(prediction => {
+						appendPrediction(prediction);
+					})
+				);
+				setTimeout(() => {
+					tick();
+				}, 10000);
+			};
+			tick();
+		};
+	</script>
+</html>
