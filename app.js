@@ -1,44 +1,100 @@
+// http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=15385&routeTag=5
+// Baker & McAllister (Inbound): stopId=15385
+// Fulton & Masonic (Inbound): stopId=14230
+// routeTag=5
+// routeTag=5R
+
+const CONSTANT = {
+	AGENCY_ID: "sf-muni",
+	STOP_ID_FULTON_MASONIC_INBOUND: "14230",
+	STOP_TAG_FULTON_MASONIC_INBOUND: "4230",
+	STOP_ID_MCALLISTER_BAKER_INBOUND: "15385",
+	STOP_TAG_MCALLISTER_BAKER_INBOUND: "5385"
+};
+
 const setPolling = (callback, interval) => {
 	setTimeout(() => {
 		setPolling(callback, interval);
 	}, interval);
 };
 
-const parseNextBusResponse = predictionJsonResponse => {
-	// Note:
-	// It looks like SFMuni changes the type of
-	// 'direction' when there are multiple inbound directions
-	// such as in the case of temporary transbay terminal
-	// TODO: Add more defensive type checking here
-	const inboundPredictions = predictionJsonResponse.predictions.direction.prediction
-		.slice(0, 3)
-		.map(({ minutes, vehicle }) => ({ minutes, vehicle }));
-	return inboundPredictions;
+// fetchResult []
+// predictions {}
+// direction [], {}, undefined
+// prediction [], {}
+// minutes ""
+
+const parseResponse = response => {
+	// console.log("raw response", response);
+	const result = response
+		// Get just predictions data
+		.map(i => i.predictions)
+		.map(predictions => {
+			// Each "predictions" object is a Route*Bus combo
+			let result = [];
+			// Check that direction exists
+			if (predictions.direction) {
+				if (predictions.direction.prediction) {
+					// If one direction (destination):
+					result = predictions.direction.prediction;
+				} else {
+					// Else multiple directions (destinations):
+					result = predictions.direction.map(d => d.prediction).flat();
+				}
+			}
+			// Append routeTag and stopTag for sorting
+			result.map(r => {
+				r.routeTag = predictions.routeTag;
+				r.stopTag = predictions.stopTag;
+				return r;
+			});
+			return result;
+		})
+		// Flattens all stops
+		.flat()
+		// Pluck the useful fields, discard the rest
+		.map(({ minutes, vehicle, routeTag, stopTag }) => ({
+			minutes,
+			vehicle,
+			routeTag,
+			stopTag
+		}));
+	return result;
 };
 
-const createPredictionTimeNode = minutes => {
-	let predictionTimeNode = document.createElement("p");
-	predictionTimeNode.classList = "prediction-time";
-	predictionTimeNode.innerText = `${minutes} minutes`;
-	return predictionTimeNode;
+const createRouteTagNode = routeTag => {
+	let routeTagNode = document.createElement("p");
+	routeTagNode.classList = "prediction-route";
+	routeTagNode.innerText = `${routeTag}`;
+	return routeTagNode;
 };
 
-const createPredictionVehicleNode = vehicle => {
-	let predictionVehicleNode = document.createElement("p");
-	predictionVehicleNode.classList = "prediction-vehicle";
-	predictionVehicleNode.innerText = `Vehicle #${vehicle}`;
-	return predictionVehicleNode;
+const createMinutesNode = minutes => {
+	let minutesNode = document.createElement("p");
+	minutesNode.classList = "prediction-time";
+	minutesNode.innerText = `${minutes} minute${minutes === "1" ? "" : "s"}`;
+	return minutesNode;
 };
 
-const createPredictionNode = (minutes, vehicle) => {
+const createVehicleNode = vehicle => {
+	let vehicleNode = document.createElement("p");
+	vehicleNode.classList = "prediction-vehicle";
+	vehicleNode.innerText = `Vehicle #${vehicle}`;
+	return vehicleNode;
+};
+
+const createPredictionNode = prediction => {
 	let predictionDiv = document.createElement("div");
 	predictionDiv.classList = "prediction js-prediction";
 
-	let predictionTimeNode = createPredictionTimeNode(minutes);
-	predictionDiv.appendChild(predictionTimeNode);
+	let routeTagNode = createRouteTagNode(prediction.routeTag);
+	predictionDiv.appendChild(routeTagNode);
 
-	let predictionVehicleNode = createPredictionVehicleNode(vehicle);
-	predictionDiv.appendChild(predictionVehicleNode);
+	let minutesNode = createMinutesNode(prediction.minutes);
+	predictionDiv.appendChild(minutesNode);
+
+	let vehicleNode = createVehicleNode(prediction.vehicle);
+	predictionDiv.appendChild(vehicleNode);
 
 	return predictionDiv;
 };
@@ -49,20 +105,53 @@ const removeStalePredictions = () => {
 	});
 };
 
-const appendPrediction = predictionNode => {
-	let list = document.querySelector(".js-prediction-list");
-	list.appendChild(predictionNode);
-};
+const updateView = predictions => {
+	removeStalePredictions();
+	let masonicPredictions = predictions.filter(
+		p => p.stopTag === CONSTANT.STOP_TAG_FULTON_MASONIC_INBOUND
+	);
+	let masonicList = document.querySelector(".js-prediction-list-masonic");
+	masonicPredictions
+		.sort((a, b) => a.minutes > b.minutes)
+		.slice(0, 3)
+		.forEach(prediction => {
+			let predictionNode = createPredictionNode(prediction);
+			masonicList.appendChild(predictionNode);
+		});
 
-const getBusPredictions = () => {
-	return fetch(
-		"http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=15385&routeTag=5"
-	)
-		.then(response => response.json())
-		.then(parseNextBusResponse)
-		.then(predictions => {
-			return predictions.map(prediction => {
-				return createPredictionNode(prediction.minutes, prediction.vehicle);
-			});
+	let bakerPredictions = predictions.filter(
+		p => p.stopTag === CONSTANT.STOP_TAG_MCALLISTER_BAKER_INBOUND
+	);
+	let bakerList = document.querySelector(".js-prediction-list-baker");
+	bakerPredictions
+		.sort((a, b) => {
+			return a.minutes > b.minutes;
+		})
+		.slice(0, 3)
+		.forEach(prediction => {
+			let predictionNode = createPredictionNode(prediction);
+			bakerList.appendChild(predictionNode);
 		});
 };
+
+async function getBusPredictions() {
+	try {
+		var data = await Promise.all([
+			fetch(
+				"http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=15385&routeTag=5"
+			).then(response => response.json()),
+			fetch(
+				"http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=14230&routeTag=5"
+			).then(response => response.json()),
+			fetch(
+				"http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=14230&routeTag=5R"
+			).then(response => response.json())
+		]);
+	} catch (error) {
+		console.error(error);
+	}
+
+	const formattedPredictionData = parseResponse(data);
+
+	return formattedPredictionData;
+}
