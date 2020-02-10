@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Work+Sans&display=swap");
 
 :root {
-	--main-bg-color: #fff;
+	--main-bg-color: #f8f8f8;
 	--main-text-color: #2d3436;
 	--secondary-color: #0984e3;
 }
@@ -55,9 +55,10 @@ ul {
 .prediction {
 	position: relative;
 	padding: 20px;
-	margin-bottom: 10px;
-	border: 1px solid var(--secondary-color);
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
 	border-radius: 2px;
+	background-color: #fff;
 }
 .prediction p {
 	margin: 0;
