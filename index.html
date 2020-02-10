@@ -13,7 +13,7 @@
 	</head>
 	<body>
 		<div class="intro">
-			<h1>5 Bus Monitor</h1>
+			<h1>5 Bus Monitor <span class="js-time-of-day time-of-day"></span></h1>
 			<p>
 				Displayed below are the available NextBus predictions for the 5 and 5R
 				bus near Central Avenue. Updated automatically every 10 seconds.
@@ -36,14 +36,21 @@
 	<script src="app.js"></script>
 	<script>
 		window.onload = event => {
-			const tick = () => {
+			const updatePredictions = () => {
 				getBusPredictions().then(predictions => {
-					// console.log(predictions);
 					updateView(predictions);
 				});
 				setTimeout(() => {
-					tick();
+					updatePredictions();
 				}, 10000);
+			};
+			updatePredictions();
+
+			const tick = () => {
+				updateClock();
+				setTimeout(() => {
+					tick();
+				}, 1000);
 			};
 			tick();
 		};

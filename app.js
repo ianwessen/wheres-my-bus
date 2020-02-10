@@ -1,9 +1,3 @@
-// http://webservices.nextbus.com/service/publicJSONFeed?command=predictions&a=sf-muni&stopId=15385&routeTag=5
-// Baker & McAllister (Inbound): stopId=15385
-// Fulton & Masonic (Inbound): stopId=14230
-// routeTag=5
-// routeTag=5R
-
 const CONSTANT = {
 	AGENCY_ID: "sf-muni",
 	STOP_ID_FULTON_MASONIC_INBOUND: "14230",
@@ -12,20 +6,18 @@ const CONSTANT = {
 	STOP_TAG_MCALLISTER_BAKER_INBOUND: "5385"
 };
 
-const setPolling = (callback, interval) => {
-	setTimeout(() => {
-		setPolling(callback, interval);
-	}, interval);
-};
-
-// fetchResult []
-// predictions {}
-// direction [], {}, undefined
-// prediction [], {}
-// minutes ""
-
 const parseResponse = response => {
-	// console.log("raw response", response);
+	// Caution:
+	// The data types inside "response" changes through out the day
+	//
+	// These are the types I've observed:
+	//
+	// response []
+	// predictions {}
+	// direction [], {}, undefined
+	// prediction [], {}
+	// minutes ""
+
 	const result = response
 		// Get just predictions data
 		.map(i => i.predictions)
@@ -124,6 +116,11 @@ const isMasonicStop = p =>
 const isBakerStop = p =>
 	p.stopTag === CONSTANT.STOP_TAG_MCALLISTER_BAKER_INBOUND;
 const sortByMinutesAsc = (a, b) => Number(a.minutes) > Number(b.minutes);
+
+const updateClock = () => {
+	let timeOfDayNode = document.querySelector(".js-time-of-day");
+	timeOfDayNode.innerText = new Date().toLocaleTimeString();
+};
 
 const updateView = predictions => {
 	removeStalePredictions();

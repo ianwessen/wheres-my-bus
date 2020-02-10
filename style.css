@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css?family=Work+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Work+Sans:300,400,600,700");
+@import url("https://fonts.googleapis.com/css?family=Cousine&display=swap");
 
 :root {
 	--main-bg-color: #f8f8f8;
@@ -11,6 +12,7 @@ html {
 body {
 	background-color: var(--main-bg-color);
 	color: var(--main-text-color);
+	font-family: "Work Sans";
 }
 h1,
 h2,
@@ -21,10 +23,17 @@ h6 {
 	color: var(--main-text-color);
 }
 
-.intro {
+.intro .time-of-day {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	font-size: 24px;
+	font-weight: 400;
+	font-family: "Cousine";
 }
 
 .intro h1 {
+	position: relative;
 	margin-bottom: 0;
 }
 
