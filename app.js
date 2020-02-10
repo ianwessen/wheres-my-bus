@@ -105,28 +105,29 @@ const removeStalePredictions = () => {
 	});
 };
 
+const isMasonicStop = p =>
+	p.stopTag === CONSTANT.STOP_TAG_FULTON_MASONIC_INBOUND;
+const isBakerStop = p =>
+	p.stopTag === CONSTANT.STOP_TAG_MCALLISTER_BAKER_INBOUND;
+const sortByMinutesAsc = (a, b) => Number(a.minutes) > Number(b.minutes);
+
 const updateView = predictions => {
 	removeStalePredictions();
-	let masonicPredictions = predictions.filter(
-		p => p.stopTag === CONSTANT.STOP_TAG_FULTON_MASONIC_INBOUND
-	);
+
 	let masonicList = document.querySelector(".js-prediction-list-masonic");
-	masonicPredictions
-		.sort((a, b) => a.minutes > b.minutes)
+	predictions
+		.filter(isMasonicStop)
+		.sort(sortByMinutesAsc)
 		.slice(0, 3)
 		.forEach(prediction => {
 			let predictionNode = createPredictionNode(prediction);
 			masonicList.appendChild(predictionNode);
 		});
 
-	let bakerPredictions = predictions.filter(
-		p => p.stopTag === CONSTANT.STOP_TAG_MCALLISTER_BAKER_INBOUND
-	);
 	let bakerList = document.querySelector(".js-prediction-list-baker");
-	bakerPredictions
-		.sort((a, b) => {
-			return a.minutes > b.minutes;
-		})
+	predictions
+		.filter(isBakerStop)
+		.sort(sortByMinutesAsc)
 		.slice(0, 3)
 		.forEach(prediction => {
 			let predictionNode = createPredictionNode(prediction);
