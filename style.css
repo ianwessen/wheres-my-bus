@@ -1,20 +1,31 @@
+@import url("https://fonts.googleapis.com/css?family=Work+Sans&display=swap");
+
+:root {
+	--main-bg-color: #fff;
+	--main-text-color: #2d3436;
+	--secondary-color: #0984e3;
+}
 html {
-	background-color: #fefad4;
+	background-color: var(--main-bg-color);
 }
 body {
-	color: #765d69;
+	background-color: var(--main-bg-color);
+	color: var(--main-text-color);
 }
 h1,
 h2,
-h3 {
-	color: #765d69;
+h3,
+h4,
+h5,
+h6 {
+	color: var(--main-text-color);
 }
 .intro h1 {
 	margin-bottom: 0;
 }
 
 .intro p {
-	max-width: 540px;
+	max-width: 560px;
 }
 
 h2 {
@@ -45,7 +56,7 @@ ul {
 	position: relative;
 	padding: 20px;
 	margin-bottom: 10px;
-	border: 1px solid #8fb9a8;
+	border: 1px solid var(--secondary-color);
 	border-radius: 2px;
 }
 .prediction p {
@@ -61,8 +72,8 @@ ul {
 	font-size: 32px;
 	font-weight: 600;
 	text-align: center;
-	color: #8fb9a8;
-	border: 1px solid #8fb9a8;
+	color: var(--secondary-color);
+	border: 1px solid var(--secondary-color);
 	border-radius: 50%;
 	transform: translateY(-50%);
 }
@@ -76,5 +87,5 @@ ul {
 .prediction-vehicle {
 	padding-left: 80px;
 	font-size: 16px;
-	color: #aaa;
+	color: var(--secondary-color);
 }
