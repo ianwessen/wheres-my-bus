@@ -3,6 +3,7 @@
 
 :root {
 	--main-bg-color: #f8f8f8;
+	--soft-border-color: #ccc;
 	--main-text-color: #2d3436;
 	--secondary-color: #0984e3;
 }
@@ -27,9 +28,12 @@ h6 {
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	padding: 8px 16px 6px;
 	font-size: 24px;
 	font-weight: 400;
 	font-family: "Cousine";
+	border: 1px solid var(--soft-border-color);
+	border-radius: 2px;
 }
 
 .intro h1 {
@@ -69,7 +73,7 @@ ul {
 	position: relative;
 	padding: 20px;
 	margin-bottom: 20px;
-	border: 1px solid #ccc;
+	border: 1px solid var(--soft-border-color);
 	border-radius: 2px;
 	background-color: #fff;
 }
@@ -97,6 +101,7 @@ ul {
 	margin-bottom: 16px;
 	padding-left: 80px;
 	font-size: 28px;
+	font-weight: 600;
 }
 
 .prediction-vehicle {
