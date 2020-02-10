@@ -83,6 +83,12 @@ const createVehicleNode = vehicle => {
 	return vehicleNode;
 };
 
+const createRefreshTimerNode = () => {
+	let timerNode = document.createElement("div");
+	timerNode.classList = "refresh-timer js-refresh-timer";
+	return timerNode;
+};
+
 const createPredictionNode = prediction => {
 	let predictionDiv = document.createElement("div");
 	predictionDiv.classList = "prediction js-prediction";
@@ -105,6 +111,14 @@ const removeStalePredictions = () => {
 	});
 };
 
+const resetRefreshTimer = () => {
+	let timerContainer = document.querySelector(".js-refresh-timer-container");
+	let oldTimer = document.querySelector(".js-refresh-timer");
+	oldTimer.remove();
+	let newTimer = createRefreshTimerNode();
+	timerContainer.appendChild(newTimer);
+};
+
 const isMasonicStop = p =>
 	p.stopTag === CONSTANT.STOP_TAG_FULTON_MASONIC_INBOUND;
 const isBakerStop = p =>
@@ -113,23 +127,24 @@ const sortByMinutesAsc = (a, b) => Number(a.minutes) > Number(b.minutes);
 
 const updateView = predictions => {
 	removeStalePredictions();
+	resetRefreshTimer();
 
-	let masonicList = document.querySelector(".js-prediction-list-masonic");
 	predictions
 		.filter(isMasonicStop)
 		.sort(sortByMinutesAsc)
 		.slice(0, 3)
 		.forEach(prediction => {
+			let masonicList = document.querySelector(".js-prediction-list-masonic");
 			let predictionNode = createPredictionNode(prediction);
 			masonicList.appendChild(predictionNode);
 		});
 
-	let bakerList = document.querySelector(".js-prediction-list-baker");
 	predictions
 		.filter(isBakerStop)
 		.sort(sortByMinutesAsc)
 		.slice(0, 3)
 		.forEach(prediction => {
+			let bakerList = document.querySelector(".js-prediction-list-baker");
 			let predictionNode = createPredictionNode(prediction);
 			bakerList.appendChild(predictionNode);
 		});

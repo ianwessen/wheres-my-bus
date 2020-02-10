@@ -20,6 +20,10 @@ h5,
 h6 {
 	color: var(--main-text-color);
 }
+
+.intro {
+}
+
 .intro h1 {
 	margin-bottom: 0;
 }
@@ -34,7 +38,7 @@ h2 {
 }
 
 .intro {
-	padding: 30px 10px 30px;
+	padding: 30px 10px 10px;
 }
 
 ul {
@@ -60,6 +64,7 @@ ul {
 	border-radius: 2px;
 	background-color: #fff;
 }
+
 .prediction p {
 	margin: 0;
 }
@@ -89,4 +94,26 @@ ul {
 	padding-left: 80px;
 	font-size: 16px;
 	color: var(--secondary-color);
+}
+
+.refresh-timer-container {
+	margin: 0 10px 20px;
+	background-color: #ccc;
+}
+
+.refresh-timer {
+	background-color: var(--secondary-color);
+	height: 4px;
+	width: 100%;
+	transform-origin: left center;
+	animation: 10s scaleRight linear;
+}
+
+@keyframes scaleRight {
+	from {
+		transform: scaleX(0);
+	}
+	to {
+		transform: scaleX(1);
+	}
 }
